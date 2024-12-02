@@ -33,16 +33,11 @@ public class Shooting : MonoBehaviour
     private void shoot()
     {
         Vector3 aimDir = (raycastPointPosition - projectileSpawnPoint.position).normalized;
-        Debug.Log(aimDir);
 
         var projectile = projectilePool.Get();
         projectile.transform.position = projectileSpawnPoint.position;
         projectile.transform.rotation = Quaternion.LookRotation(aimDir, Vector3.up);
 
         projectile.releaseProjectile(aimDir, () => projectilePool.Release(projectile));
-
-
-
-        //Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(aimDir, Vector3.up));
     }
 }
