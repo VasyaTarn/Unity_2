@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class ProjectileMovementController : MonoBehaviour
@@ -5,23 +6,28 @@ public class ProjectileMovementController : MonoBehaviour
     private Rigidbody rb;
     [SerializeField] private float speed;
 
-    private void Start()
-    {
-        rb = GetComponent<Rigidbody>();
-    }
+    private Action onReleaseCallback;
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.CompareTag("Destroyable"))
+        if(collision.gameObject.CompareTag("Point"))
         {
-            Destroy(collision.gameObject);
+            collision.gameObject.SetActive(false);
+            GameManger.Instance.addScore(1);
         }
 
-        Destroy(gameObject);
+        onReleaseCallback?.Invoke();
     }
 
-    private void Update()
+    public void releaseProjectile(Vector3 direction, Action releaseCallback)
     {
-        rb.velocity = transform.forward * speed;
+        if(rb == null)
+        {
+            rb = GetComponent<Rigidbody>();
+        }
+
+        onReleaseCallback = releaseCallback;
+
+        rb.velocity = direction * speed;
     }
 }

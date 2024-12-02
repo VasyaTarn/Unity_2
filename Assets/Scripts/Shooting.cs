@@ -6,6 +6,14 @@ public class Shooting : MonoBehaviour
     private Vector3 raycastPointPosition = Vector3.zero;
     [SerializeField] private Transform projectileSpawnPoint;
 
+    private int initialPoolSize = 10;
+    private CustomPool<ProjectileMovementController> projectilePool;
+
+    private void Start()
+    {
+        projectilePool = new CustomPool<ProjectileMovementController>(projectilePrefab, initialPoolSize);
+    }
+
     private void Update()
     {
         Vector2 screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
@@ -25,7 +33,16 @@ public class Shooting : MonoBehaviour
     private void shoot()
     {
         Vector3 aimDir = (raycastPointPosition - projectileSpawnPoint.position).normalized;
+        Debug.Log(aimDir);
 
-        Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(aimDir, Vector3.up));
+        var projectile = projectilePool.Get();
+        projectile.transform.position = projectileSpawnPoint.position;
+        projectile.transform.rotation = Quaternion.LookRotation(aimDir, Vector3.up);
+
+        projectile.releaseProjectile(aimDir, () => projectilePool.Release(projectile));
+
+
+
+        //Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(aimDir, Vector3.up));
     }
 }
